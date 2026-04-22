@@ -21,11 +21,11 @@ jobs:
       - name: Run tests
         run: mvn test
       - name: Get project version
-        run: echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+        run: echo "tag=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
         id: get_version
       - name: Generate Docker image
-        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.PROJECT_VERSION }}
+        run: mvn spring-boot:build-image -DskipTests -Dspring-boot.build-image.imageName=${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.tag }}
       - name: Login to DockerHub
         run: docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" 
       - name: Push image to DockerHub
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.PROJECT_VERSION }}
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/posts:${{ steps.get_version.outputs.tag }}
